@@ -1,11 +1,22 @@
 package com.gildedrose;
 
+import com.gildedrose.strategy.AgedBrieStrategy;
+import com.gildedrose.strategy.BackstagePassesStrategy;
+import com.gildedrose.strategy.ConjuredStrategy;
+import com.gildedrose.strategy.NormalStrategy;
+
 class GildedRose {
     public static final String AGED_BRIE = "Aged Brie";
     public static final String BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert";
     public static final String SULFURAS = "Sulfuras, Hand of Ragnaros";
+    public static final String CONJURED = "Conjured Mana Cake";
 
     Item[] items;
+
+    AgedBrieStrategy agedBrieStrategy = new AgedBrieStrategy();
+    BackstagePassesStrategy backstagePassesStrategy = new BackstagePassesStrategy();
+    ConjuredStrategy conjuredStrategy = new ConjuredStrategy();
+    NormalStrategy normalStrategy = new NormalStrategy();
 
     public GildedRose(Item[] items) {
         this.items = items;
@@ -14,40 +25,18 @@ class GildedRose {
     public void updateQuality() {
         for (Item item : items) {
             switch (item.name) {
-                case "Backstage passes to a TAFKAL80ETC concert":
-                    if (item.quality < 50) {
-                        item.quality += 1;
-                    }
-                    if (item.sellIn < 11 && item.quality < 50) {
-                        item.quality +=1;
-                    }
-                    if (item.sellIn < 6 && item.quality < 50) {
-                        item.quality +=1;
-                    }
-                    item.sellIn -= 1;
-                    if (item.sellIn < 0) {
-                        item.quality -= item.quality;
-                    }
+                case AGED_BRIE:
+                    agedBrieStrategy.updateQuality(item);
                     break;
-                case "Aged Brie":
-                    if (item.quality < 50) {
-                        item.quality += 1;
-                    }
-                    item.sellIn -= 1;
-                    if (item.sellIn < 0 && item.quality < 50) {
-                        item.quality += 1;
-                    }
+                case BACKSTAGE_PASSES:
+                    backstagePassesStrategy.updateQuality(item);
                     break;
-                case "Sulfuras, Hand of Ragnaros":
+                case CONJURED:
+                    conjuredStrategy.updateQuality(item);
+                case SULFURAS:
                     break;
                 default:
-                    if (item.quality > 0) {
-                        item.quality -= 1;
-                    }
-                    if (item.sellIn < 0 && item.quality > 0) {
-                        item.quality -= 1;
-                    }
-                    item.sellIn -= 1;
+                    normalStrategy.updateQuality(item);
             }
         }
     }
